@@ -101,12 +101,7 @@ namespace Cubiquity
 
             int minimumLOD = GetComponent<VolumeRenderer>() ? GetComponent<VolumeRenderer>().minimumLOD : 0;
 
-            // Although the LOD system is partially functional I don't feel it's ready for release yet.
-            // The following line disables it by forcing the highest level of detail to always be used.
-            minimumLOD = 0;
-
-            // Next line commented out so the system starts up with LOD disabled.
-            //if (volumeRenderer != null && volumeRenderer.hasChanged)
+            if (volumeRenderer != null && volumeRenderer.hasChanged)
             {
                 CubiquityDLL.SetLodRange(data.volumeHandle.Value, minimumLOD, 0);
             }
