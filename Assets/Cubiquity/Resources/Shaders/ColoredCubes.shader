@@ -14,9 +14,6 @@ Shader "ColoredCubes"
 		#pragma target 3.0
 		#pragma glsl
 		
-		// Scripts can flip the computed normal by setting this to '-1.0f'.
-		float normalMultiplier;
-		
 		float4x4 _World2Volume;
 		
 		struct Input
@@ -48,20 +45,24 @@ Shader "ColoredCubes"
 	
 		void surf (Input IN, inout SurfaceOutput o)
 		{
-			// Compute the surface normal in the fragment shader. I believe the orientation of the vector is different
-			// between render systems as some are left-handed and some are right handed (even though Unity corrects for
-			// other handiness differences internally). With these render system tests the normals are correct on Windows
-			// regardless of which render system is in use.
-			#if SHADER_API_D3D9 || SHADER_API_D3D11 || SHADER_API_D3D11_9X || SHADER_API_XBOX360
-				float3 volumeNormal = normalize(cross(ddx(IN.volumePos.xyz), ddy(IN.volumePos.xyz)));
-			#else
-				float3 volumeNormal = -normalize(cross(ddx(IN.volumePos.xyz), ddy(IN.volumePos.xyz)));
-			#endif
-			
-			// Despite our render system checks above, we have seen that the normals are still backwards in Linux
-			// standalone builds. The reason is not currently clear, but the 'normalMultiplier' allow scripts to
-			// flip the normal if required by setting the multiplier to '-1.0f'.
-			volumeNormal *= normalMultiplier;
+			// Compute the normal vector using derivative instructions. This save us space compared to passing
+			// normals with the mesh data, and also means we don't need to duplicate vertices on cube corners.
+			// This trick only works because we are using flat-shading not smooth shading.
+			float3 volumeNormal = normalize(cross(ddx(IN.volumePos.xyz), ddy(IN.volumePos.xyz)));
+
+			// Our derivative trick above can easily end up with normal vectors pointing in the opposite direction
+			// to what we want. This is because the exact behaviour seems to depend on a nuber of factors including
+			// render system, operating system, Unity version, and play-mode vs, edit-mode.
+			//
+			// To fix this we flip normal vectors if they point away from the eye. This results on incorrect
+			// normals on back-facing triangles, but we can't see those anyway.
+			float4 volumeSpaceCameraPos = mul(_World2Volume, float4(_WorldSpaceCameraPos, 1.0));
+			float3 volumeToCamera = normalize(volumeSpaceCameraPos.xyz - IN.volumePos.xyz);
+			if(dot(volumeToCamera, volumeNormal) < 0.0) // If the normal faces away from the camera
+			{
+				volumeNormal *= -1.0; // Flip it
+			}
+
 			
 			// This fixes inaccuracies/rounding errors which can otherwise occur
 			volumeNormal = floor(volumeNormal + float3(0.5, 0.5, 0.5));	

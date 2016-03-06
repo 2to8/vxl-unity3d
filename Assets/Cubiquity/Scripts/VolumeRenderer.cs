@@ -53,7 +53,6 @@ namespace Cubiquity
                     // All Cubiquity materials have some standard parameters, and we should
                     // probably refactor these into some kind of base material if Unity supports that?
                     mMaterial.SetFloat("_height", 0.0f);
-                    computeNormalMultiplier(mMaterial);
                 }
 
                 return mMaterial;
@@ -209,33 +208,5 @@ namespace Cubiquity
 		
 		// Dummy start method rqured for the 'enabled' checkbox to show up in the inspector.
 		void Start() { }
-
-        private void computeNormalMultiplier(Material mat)
-        {
-            // We compute surface normals using derivative operations in the fragment shader,
-			// but we are finding it hard to automatically get the correct behaviour on all
-			// platforms. We can correct for this in the shader by setting the multiplier below.
-#if (UNITY_4_3 || UNITY_4_5 || UNITY_4_6)
-	#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
-	            mat.SetFloat("normalMultiplier", -1.0f);
-	#else
-	            mat.SetFloat("normalMultiplier", 1.0f);
-	#endif
-#else
-			mat.SetFloat("normalMultiplier", 1.0f);
-
-			// I have literally no idea why Unity 5 needs us to invert the normal when
-			// using the Direct3D render system in edit mode (but not in play mode).
-			if(Application.isPlaying == false)
-			{
-				string gdv = SystemInfo.graphicsDeviceVersion;
-				if(gdv.IndexOf("Direct3D") != -1)
-				{
-					mat.SetFloat("normalMultiplier", -1.0f);
-				}
-			}
-			
-#endif
-        }
 	}
 }
