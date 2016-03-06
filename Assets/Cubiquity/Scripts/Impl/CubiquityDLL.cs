@@ -38,8 +38,6 @@ namespace Cubiquity
 			{
 				try
 				{
-					Installation.ValidateAndFix();
-					
 					uint majorVersion;
 					uint minorVersion;
 					uint patchVersion;
