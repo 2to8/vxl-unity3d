@@ -10,7 +10,7 @@
  *
  * You may wish to model your voxel geometry in an external application such as Magica Voxel, Voxel Shop, or Qubicle Constructor. Such applications will typically allow more comprehensive editing options than we will ever provide in %Cubiquity, and %Cubiquity already provides the option to import Magica Voxel files (others will follow in the future). This is done by the use of the command-line `ProcessVDB` tool.
  *
- * To use this tool you should open a command prompt and change to the `StreamingAssets\%Cubiquity\SDK` directory. From here you can run:
+ * To use this tool you should open a command prompt and change to the `Assets/Cubiquity/CubiquitySDK` directory, and then into the appropriate directory for your operating system and platform (e.g. `Linux/x86` or `Windows/x86-64`). From here you can run:
  *
  * \par
  * `ProcessVDB.exe -import -magicavoxel input.vox -coloredcubes output.vdb`
