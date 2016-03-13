@@ -12,16 +12,7 @@ namespace Cubiquity
 	 * and standalone builds as well as between platforms.
 	 */
 	public class Paths
-	{
-		/// Locatoion of the Cubiquity SDK containing the native code libraries and additional executables (converters, etc). 
-		/**
-		 * \return The path given by 'Application.streamingAssetsPath + "/Cubiquity/SDK"'
-		 */
-		public static string SDK
-		{
-			get { return Application.streamingAssetsPath + "/Cubiquity/SDK"; }
-		}
-		
+	{		
 		/// Location of the Cubiquity '.vdb' files.
 		/**
 		 * If you create your own voxel databases (e.g. by using a converter) then you should place them in this folder. You will then be able to use them 
